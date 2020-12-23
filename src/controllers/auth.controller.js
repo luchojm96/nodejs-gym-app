@@ -1,13 +1,13 @@
 const { response } = require('express');
 const bcrypt = require('bcryptjs');
 
-const User = require('../models/User');
+const { User } = require('../models/User');
 const { generateJWT } = require('../helpers/jwt');
 
 const signUp = async (req, res = response) => {
 	try {
 		const { email, password } = req.body;
-		let user = await User.findOne({ email });
+		let user = await User.findOne({ where: { email } })
 
 		if (user) {
 			return res.status(400).json({
@@ -16,7 +16,7 @@ const signUp = async (req, res = response) => {
 			});
 		}
 
-		user = new User(req.body);
+		user = User.build(req.body);
 		const salt = bcrypt.genSaltSync();
 		user.password = bcrypt.hashSync(password, salt);
 		await user.save();
@@ -26,7 +26,7 @@ const signUp = async (req, res = response) => {
 		return res.status(201).json({
 			ok: true,
 			msg: 'Successfully registered',
-			uid: user.id,
+			id: user.id,
 			name: user.name,
 			token,
 		});
@@ -41,7 +41,7 @@ const signUp = async (req, res = response) => {
 const signIn = async (req, res = response) => {
 	try {
 		const { email, password } = req.body;
-		const user = await User.findOne({ email });
+		const user = await User.findOne({ where: { email } });
 
 		if (!user) {
 			return res.status(400).json({
@@ -63,7 +63,7 @@ const signIn = async (req, res = response) => {
 		return res.json({
 			ok: true,
 			msg: 'Successfully logged',
-			uid: user.id,
+			id: user.id,
 			name: user.name,
 			token,
 		});
@@ -76,9 +76,9 @@ const signIn = async (req, res = response) => {
 };
 
 const renewToken = async (req, res = response) => {
-	const { uid, name } = req;
+	const { id, name } = req;
 
-	const token = await generateJWT(uid, name);
+	const token = await generateJWT(id, name);
 
 	return res.json({
 		ok: true,
