@@ -23,5 +23,5 @@ app.use('/api/auth', require('./routes/auth.routes'));
 
 // Escuchar peticiones
 app.listen(process.env.PORT, () => {
-	console.log(`Server on port ${process.env.PORT}`);
+  console.log(`Server on port ${process.env.PORT}`);
 });

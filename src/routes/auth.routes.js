@@ -1,32 +1,38 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
 
-const { signUp, signIn, renewToken } = require('../controllers/auth.controller');
+const {
+  signUp,
+  signIn,
+  renewToken,
+} = require('../controllers/auth.controller');
 const { fieldValidator } = require('../middlewares/fieldValidator');
 const { jwtValidator } = require('../middlewares/jwtValidator');
 
 const router = Router();
 
 router.post(
-	'/new',
-	[
-		check('name', 'The name is required').trim().not().isEmpty(),
-		check('surname', 'The surname is required').trim().not().isEmpty(),
-		check('email', 'The email is required').trim().isEmail(),
-		check('password', 'The password must be at least 6 characters').isLength({ min: 6 }),
-		fieldValidator,
-	],
-	signUp
+  '/new',
+  [
+    check('username', 'The username is required').trim().not().isEmpty(),
+    // check('surname', 'The surname is required').trim().not().isEmpty(),
+    check('email', 'The email is required').trim().isEmail(),
+    check('password', 'The password must be at least 8 characters').isLength({
+      min: 8,
+    }),
+    fieldValidator,
+  ],
+  signUp
 );
 
 router.post(
-	'/',
-	[
-		check('email', 'The email is required').trim().isEmail(),
-		check('password', 'The password must be at least 6 characters').isLength({ min: 6 }),
-		fieldValidator,
-	],
-	signIn
+  '/',
+  [
+    check('email', 'The email is required').trim().isEmail(),
+    check('password', 'The password is required').not().isEmpty(),
+    fieldValidator,
+  ],
+  signIn
 );
 
 router.get('/renew', jwtValidator, renewToken);
