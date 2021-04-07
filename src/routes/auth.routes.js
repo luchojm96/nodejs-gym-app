@@ -15,11 +15,11 @@ router.post(
   '/new',
   [
     check('username', 'The username is required').trim().not().isEmpty(),
-    // check('surname', 'The surname is required').trim().not().isEmpty(),
     check('email', 'The email is required').trim().isEmail(),
     check('password', 'The password must be at least 8 characters').isLength({
       min: 8,
     }),
+    check('type', 'The type is required').not().isEmpty(),
     fieldValidator,
   ],
   signUp
